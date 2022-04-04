@@ -7,7 +7,9 @@ package com.loren.gestionventasv3.Main;
 import com.loren.gestionventasv3.DAO.ConexionBD;
 import com.loren.gestionventasv3.DAO.FactoriaDAO;
 import com.loren.gestionventasv3.POJO.Cliente;
+import com.loren.gestionventasv3.POJO.Comercial;
 import com.loren.gestionventasv3.POJO.Pedido;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
@@ -225,7 +227,7 @@ public class Main {
         System.out.println("3.- Actualizar Pedidos.");
         System.out.println("4.- Buscar Pedidos por ID.");
         System.out.println("5.- Buscar Pedidos por id de cliente.");
-        System.out.println("6.- Buscar pedido por nombre de cliente.");
+        System.out.println("6.- Buscar pedidos por nombre de cliente.");
         System.out.println("7.- Listar pedidos.");
         System.out.println("8.- Salir.");
     }
@@ -259,9 +261,75 @@ public class Main {
             menuPedidos();
             menu = Integer.parseInt(teclado.nextLine());
             switch (menu) {
+                // Alta de pedidos
                 case 1: {
+                    System.out.println("Dime el total del pedido: ");
+                    String totAux = teclado.nextLine();
+                    System.out.println("Dime la fecha del pedido: ");
+                    String fecAux = teclado.nextLine();
+                    System.out.println("Dime el cliente del pedido: ");
+                    String cliAux = teclado.nextLine();                    
+                    System.out.println("Dime el comercial del pedido: ");
+                    String comAux = teclado.nextLine();                    
+                    
+                    // Validamos el cliente
+                    Cliente cliente = new Cliente();
+                    cliente.setId(Long.valueOf(cliAux));
+                    cliente = FactoriaDAO.getClienteDAO().findById(cliente);
+                    
+                    if(cliente==null){
+                        System.out.println("No se ha encontrado el cliente.");
+                        break;
+                    }
+                    
+                    // Validamos el comercial
+                    Comercial comercial = new Comercial();
+                    comercial.setId(Long.valueOf(comAux));
+                    comercial = FactoriaDAO.getComercialDAO().findById(comercial);
+                    if(comercial==null){
+                        System.out.println("No se ha encontrado el comercial.");
+                        break;
+                    }                    
+                    
+                    Pedido pedido = new Pedido();
+                    pedido.setTotal(Double.valueOf(totAux));
+                    pedido.setFecha(Date.valueOf(fecAux));
+                    pedido.setCliente(cliente);
+                    pedido.setComercial(comercial);                    
+                    int i = FactoriaDAO.getPedidoDAO().add(pedido);
+                    if(i>0){
+                        System.out.println("Se ha insertado " + i + " pedidos.");
+                    }else{
+                        System.out.println("No se ha insertado ningún pedido.");
+                    }
                     break;
                 }
+                // Buscar pedidos por nombre de cliente
+                case 6: {
+                    System.out.println("Dime el nombre del cliente: ");
+                    String nomAux = teclado.nextLine();                    
+                    
+                    Cliente a = new Cliente();
+                    a.setNombre(nomAux);
+                    List<Cliente> lista = FactoriaDAO.getClienteDAO().findByNombre(a);
+                    if(a==null){
+                        System.out.println("Cliente no existe");
+                    }else{
+                        for (Cliente cliente : lista) {
+                            FactoriaDAO.getPedidoDAO().loadPedidosByNombreCliente(cliente);                            
+                        }
+           
+                        for (Cliente cliente : lista) {
+                            System.out.println("------");
+                            System.out.println(cliente.toString());
+                            for (Pedido pedido : cliente.getListaPedidos()) {
+                                System.out.println(pedido.toString());
+                            }                           
+                        }                        
+
+                    }
+                    break;
+                }                
                 // Listar pedidos
                 case 7: {
                     List<Pedido> lista = FactoriaDAO.getPedidoDAO().getAll();
@@ -269,8 +337,8 @@ public class Main {
                         System.out.println(pedido.toString());
                     }
                     break;
-                }                
-                default:{
+                }
+                default: {
                     break;
                 }
             }

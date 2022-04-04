@@ -1,17 +1,21 @@
-package com.loren.gestionventasv3.DAO;
+package com.loren.gestionventasv3.DAO.Pedido;
 
+import com.loren.gestionventasv3.DAO.ConexionBD;
+import com.loren.gestionventasv3.DAO.FactoriaDAO;
+import com.loren.gestionventasv3.DAO.Pedido.PedidoDAO;
 import com.loren.gestionventasv3.POJO.Cliente;
 import com.loren.gestionventasv3.POJO.Comercial;
 import com.loren.gestionventasv3.POJO.Pedido;
 import java.sql.Connection;
 import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class PedidoDAO implements IOperationsCRUD<Pedido>{
+public class PedidoDAOImpl implements PedidoDAO{
     
     // Conexion compartida para todos los metodos
     private Connection conn = ConexionBD.getConnection();    
@@ -66,8 +70,21 @@ public class PedidoDAO implements IOperationsCRUD<Pedido>{
     }
 
     @Override
-    public int add(Pedido object) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public int add(Pedido pedido) {
+        String sql = "INSERT INTO pedido(total, fecha, id_cliente, id_comercial) VALUES (?,?,?,?);";
+        try{
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setDouble(1, pedido.getTotal());
+            ps.setDate(2, pedido.getFecha());
+            ps.setLong(3, pedido.getCliente().getId());
+            ps.setLong(4, pedido.getComercial().getId());          
+            int i = ps.executeUpdate();
+            ps.close();
+            return i;
+        }catch(Exception e){
+            e.printStackTrace();
+            return -1;
+        }
     }
 
     @Override
@@ -75,9 +92,42 @@ public class PedidoDAO implements IOperationsCRUD<Pedido>{
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    public void loadPedidosByNombreCliente(Cliente cliente){
+    //    String sql = "select a.* from pedido a, cliente b where a.id_cliente=b.id and " +
+    //                " b.nombre = ? and b.id = " + String.valueOf(cliente.getId());
+    // Consulta optimizada
+    String sql = "select a.* from pedido a where a.id_cliente = ?";
+        //List<Pedido> lista =  new ArrayList<Pedido>(); No hace falta
+        try{
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setLong(1, cliente.getId());
+            ResultSet rs = ps.executeQuery();
+            Pedido a = null;
+            while (rs.next()){
+                Long idAux = rs.getLong("id");
+                double totAux = rs.getDouble("total");
+                Date fecAux = rs.getDate("fecha");
+                //Long cliAux = rs.getLong("id_cliente"); No hace falta
+                Long comAux = rs.getLong("id_comercial");                
+                
+                // Localizamos el comercial
+                Comercial comercial = new Comercial();
+                comercial.setId(comAux);
+                comercial = FactoriaDAO.getComercialDAO().findById(comercial);
+    
+                // Crea el pedido y lo añade a la lista
+                a = new Pedido(idAux, totAux, fecAux, cliente, comercial);
+                cliente.getListaPedidos().add(a);
+            }
+            rs.close();
+            ps.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }            
+    }
+
     @Override
     public int delete(Pedido object) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
 }
