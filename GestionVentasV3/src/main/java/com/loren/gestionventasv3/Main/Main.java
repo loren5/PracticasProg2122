@@ -7,6 +7,7 @@ package com.loren.gestionventasv3.Main;
 import com.loren.gestionventasv3.DAO.ConexionBD;
 import com.loren.gestionventasv3.DAO.FactoriaDAO;
 import com.loren.gestionventasv3.POJO.Cliente;
+import com.loren.gestionventasv3.POJO.Pedido;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
@@ -63,11 +64,11 @@ public class Main {
                                 case 2: {
                                     mostrarClientes();
                                     Cliente a = buscarCliente("Dime el id del cliente a borrar: ");
-                                    if(a!=null){
+                                    if (a != null) {
                                         System.out.println("¿Estas seguro de borrar el cliente (S/N):");
                                         System.out.println(a.toString());
-                                        String  respuesta = teclado.nextLine();
-                                        if(respuesta.equals("S")){
+                                        String respuesta = teclado.nextLine();
+                                        if (respuesta.equals("S")) {
                                             int i = factoriaDAO.getClienteDAO().delete(a);
                                             if (i > 0) {
                                                 System.out.println("Se ha borrado " + i + " clientes.");
@@ -76,13 +77,13 @@ public class Main {
                                             }
                                         }
                                     }
-                                    break;                                    
-                                }                                
+                                    break;
+                                }
                                 // Actualizar cliente
                                 case 3: {
                                     mostrarClientes();
                                     Cliente a = buscarCliente("Dime el id del cliente que vas a modificar: ");
-                                    if(a!=null){
+                                    if (a != null) {
                                         System.out.println("Dime el nombre del cliente: ");
                                         String nomAux = teclado.nextLine();
                                         System.out.println("Dime el apellido1 del cliente: ");
@@ -92,21 +93,21 @@ public class Main {
                                         System.out.println("Dime la ciudad del cliente: ");
                                         String ciuAux = teclado.nextLine();
                                         System.out.println("Dime la categoria del cliente: ");
-                                        String catAux = teclado.nextLine();         
-                                        
+                                        String catAux = teclado.nextLine();
+
                                         // Comprobamos que ha habido modificaciones
-                                        a.setNombre((nomAux.trim().length() >0)? nomAux : a.getNombre());
-                                        a.setApellido1((ape1Aux.trim().length() >0)? ape1Aux : a.getApellido1());
-                                        a.setApellido2((ape2Aux.trim().length() >0)? ape2Aux : a.getApellido2());
-                                        a.setCiudad((ciuAux.trim().length() >0)? ciuAux : a.getCiudad());
-                                        a.setCategoria((catAux.trim().length() >0)? Integer.valueOf(catAux) : a.getCategoria());
-                                       
+                                        a.setNombre((nomAux.trim().length() > 0) ? nomAux : a.getNombre());
+                                        a.setApellido1((ape1Aux.trim().length() > 0) ? ape1Aux : a.getApellido1());
+                                        a.setApellido2((ape2Aux.trim().length() > 0) ? ape2Aux : a.getApellido2());
+                                        a.setCiudad((ciuAux.trim().length() > 0) ? ciuAux : a.getCiudad());
+                                        a.setCategoria((catAux.trim().length() > 0) ? Integer.valueOf(catAux) : a.getCategoria());
+
                                         int i = factoriaDAO.getClienteDAO().update(a);
                                         if (i > 0) {
                                             System.out.println("Se ha actualizado " + i + " clientes.");
                                         } else {
                                             System.out.println("No se ha actualizado el cliente.");
-                                        } 
+                                        }
                                     }
                                     break;
                                 }
@@ -170,6 +171,11 @@ public class Main {
                         }
                         break;
                     }
+                    case 3: {
+                        gestionPedidos();
+                        menuVentas = -1;
+                        break;
+                    }
                     case 4: {
                         break;
                     }
@@ -210,6 +216,20 @@ public class Main {
         System.out.println("8.- Salir.");
     }
 
+    public static void menuPedidos() {
+        System.out.println("********************");
+        System.out.println("Menú de Pedidos");
+        System.out.println("********************");
+        System.out.println("1.- Alta de Pedidos.");
+        System.out.println("2.- Baja de Pedidos.");
+        System.out.println("3.- Actualizar Pedidos.");
+        System.out.println("4.- Buscar Pedidos por ID.");
+        System.out.println("5.- Buscar Pedidos por id de cliente.");
+        System.out.println("6.- Buscar pedido por nombre de cliente.");
+        System.out.println("7.- Listar pedidos.");
+        System.out.println("8.- Salir.");
+    }
+
     private static void mostrarClientes() {
         List<Cliente> lista = factoriaDAO.getClienteDAO().getAll();
         if ((lista != null) && (!lista.isEmpty())) {
@@ -231,5 +251,29 @@ public class Main {
         a.setId(idAux);
         a = factoriaDAO.getClienteDAO().findById(a);
         return a;
+    }
+
+    private static void gestionPedidos() {
+        int menu = -1;
+        while (menu != 8) {
+            menuPedidos();
+            menu = Integer.parseInt(teclado.nextLine());
+            switch (menu) {
+                case 1: {
+                    break;
+                }
+                // Listar pedidos
+                case 7: {
+                    List<Pedido> lista = FactoriaDAO.getPedidoDAO().getAll();
+                    for (Pedido pedido : lista) {
+                        System.out.println(pedido.toString());
+                    }
+                    break;
+                }                
+                default:{
+                    break;
+                }
+            }
+        }
     }
 }

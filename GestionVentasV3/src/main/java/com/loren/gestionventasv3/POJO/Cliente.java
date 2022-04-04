@@ -4,6 +4,9 @@
  */
 package com.loren.gestionventasv3.POJO;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author profesor
@@ -16,10 +19,14 @@ public class Cliente {
     private String apellido2;
     private String ciudad;
     private int categoria;
+    private List<Pedido> listaPedidos;
 
     public Cliente() {
         super();
+        this.listaPedidos = new ArrayList<Pedido>();        
     }
+
+
 
     public Cliente(Long id, String nombre, String apellido1, String apellido2, String ciudad, int categoria) {
         super();
@@ -29,6 +36,7 @@ public class Cliente {
         this.apellido2 = apellido2;
         this.ciudad = ciudad;
         this.categoria = categoria;
+        this.listaPedidos = new ArrayList<Pedido>();
     }
 
     public Long getId() {
@@ -79,8 +87,18 @@ public class Cliente {
         this.categoria = categoria;
     }
 
+    public List<Pedido> getListaPedidos() {
+        return listaPedidos;
+    }
+
+    public void setListaPedidos(List<Pedido> listaPedidos) {
+        this.listaPedidos = listaPedidos;
+    }    
+
     @Override
     public String toString() {
-        return "Cliente{" + "id=" + id + ", nombre=" + nombre + ", apellido1=" + apellido1 + ", apellido2=" + apellido2 + ", ciudad=" + ciudad + ", categoria=" + categoria + '}';
+        return "Cliente{" + "id=" + id + ", nombre=" + nombre + ", apellido1=" + apellido1 + ", apellido2=" + apellido2 + ", ciudad=" + ciudad + ", categoria=" + categoria +'}';
     }
+    
+
 }
