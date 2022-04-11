@@ -7,6 +7,7 @@ package com.loren.gestionventasv3.Main;
 import com.loren.gestionventasv3.DAO.ConexionBD;
 import com.loren.gestionventasv3.DAO.FactoriaDAO;
 import com.loren.gestionventasv3.POJO.Cliente;
+import com.loren.gestionventasv3.Utils.MyException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
@@ -112,13 +113,18 @@ public class Main {
                                 }
                                 // Buscar cliente por id
                                 case 4: {
-                                    Cliente a = buscarCliente("Dime el id del cliente: ");
-                                    if (a == null) {
-                                        System.out.println("Cliente no encontrado");
-                                    } else {
-                                        System.out.println(a.toString());
+                                    try{
+                                        Cliente a = buscarCliente("Dime el id del cliente: ");
+                                        if (a == null) {
+                                            crearExcepcion("Cliente no encontrado mediante Excepcion");
+                                        } else {
+                                            System.out.println(a.toString());
+                                        }
+                                    }catch(MyException mex){
+                                        System.out.println(mex.getMessage());
+                                    }finally{
+                                        break;
                                     }
-                                    break;
                                 }
                                 case 5: {
                                     System.out.println("Dime el nombre del cliente: ");
@@ -231,5 +237,9 @@ public class Main {
         a.setId(idAux);
         a = factoriaDAO.getClienteDAO().findById(a);
         return a;
+    }
+
+    private static void crearExcepcion(String msg) throws MyException {
+        throw new MyException(msg);
     }
 }
