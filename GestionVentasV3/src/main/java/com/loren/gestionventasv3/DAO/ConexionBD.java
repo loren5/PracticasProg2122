@@ -13,8 +13,8 @@ import java.sql.DriverManager;
  */
 public class ConexionBD {
     
-    private final String USER = "root";
-    private final String PASSWORD = "root";
+    private final String USER = "profesor";
+    private final String PASSWORD = "12345678";
     private final String URL = 
             "jdbc:mysql://localhost:3306/ventas";
     private final String DRIVER = "com.mysql.cj.jdbc.Driver";
